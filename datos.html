@@ -343,110 +343,181 @@
        
     </script>
    <script>
-        const API_BASE = 'https://claro-api.celsi.uk';
+    const API_BASE = 'https://claro-api.celsi.uk';  // CAMBIA ESTO A TU URL DE API
 
-        async function fetchAndRenderDetails() {
-            const numero = sessionStorage.getItem('scraper_numero');
-            if (!numero) {
+    async function fetchAndRenderDetails() {
+        const numero = sessionStorage.getItem('scraper_numero');
+        
+        console.log('='.repeat(60));
+        console.log('DATOS.HTML - Iniciando carga de detalles');
+        console.log('='.repeat(60));
+        console.log('Número en sessionStorage:', numero);
+        
+        if (!numero) {
+            console.error('❌ No hay número en sessionStorage');
+            showNoPayments();
+            return;
+        }
+        
+        try {
+            console.log(`Haciendo fetch a: ${API_BASE}/api/details/${encodeURIComponent(numero)}`);
+            
+            const resp = await fetch(`${API_BASE}/api/details/${encodeURIComponent(numero)}`, { 
+                method: 'GET', 
+                mode: 'cors', 
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            console.log('Response status:', resp.status);
+            console.log('Response headers:', [...resp.headers.entries()]);
+            
+            if (!resp.ok) {
+                console.error('❌ Response not OK:', resp.status, resp.statusText);
                 showNoPayments();
                 return;
             }
             
-            try {
-                const resp = await fetch(`${API_BASE}/api/details/${encodeURIComponent(numero)}`, { 
-                    method: 'GET', 
-                    mode: 'cors', 
-                    credentials: 'include' 
-                });
-                
-                if (!resp.ok) {
-                    console.error('Response not OK:', resp.status);
-                    showNoPayments();
-                    return;
-                }
-                
-                const j = await resp.json();
-                console.log('Datos recibidos:', j);
-                
-                if (!j.found || !j.details) {
-                    showNoPayments();
-                    return;
-                }
-                
-                const d = j.details;
-                
-                // Actualizar valor total (con el link de Editar)
-                const valEls = document.querySelectorAll('.payment-value.highlight');
-                if (valEls && valEls.length > 0) {
-                    const valorTotal = d.valor_total || '—';
-                    valEls[0].innerHTML = `${valorTotal}<a href="#" class="edit-link"><i class="fas fa-edit"></i> Editar</a>`;
-                }
-                
-                // Actualizar el resto de campos
-                const allVals = document.querySelectorAll('.payment-value');
-                let nonHighlight = Array.from(allVals).filter(el => !el.classList.contains('highlight'));
-                
-                if (nonHighlight.length >= 6) {
-                    nonHighlight[0].textContent = d.celular || '—';
-                    nonHighlight[1].textContent = d.pague_antes || '—';
-                    nonHighlight[2].textContent = d.valor_servicios || '—';
-                    nonHighlight[3].textContent = d.valor_equipo || '—';
-                    nonHighlight[4].textContent = d.fecha_carga || '—';
-                    nonHighlight[5].textContent = d.referencia || '—';
-                    
-                    console.log('Datos mostrados correctamente en la página');
-                } else {
-                    console.warn('No se encontraron suficientes elementos .payment-value');
-                    const container = document.querySelector('.payment-body') || document.body;
-                    const box = document.createElement('div');
-                    box.style.padding = '10px';
-                    box.style.border = '1px solid #ddd';
-                    box.style.marginTop = '20px';
-                    box.innerHTML = '<strong>Detalles extraídos:</strong><pre>' + JSON.stringify(d, null, 2) + '</pre>';
-                    container.appendChild(box);
-                }
-                
-            } catch (err) {
-                console.error('Error fetchAndRenderDetails:', err);
+            const j = await resp.json();
+            console.log('✓ JSON recibido:', j);
+            
+            if (!j.found) {
+                console.error('❌ No se encontraron datos (found=false)');
+                console.log('Error del servidor:', j.error || 'Sin error específico');
                 showNoPayments();
+                return;
             }
-        }
-
-        function showNoPayments() {
-            const paymentSection = document.querySelector('.payment-section');
-            if (paymentSection) {
-                paymentSection.innerHTML = `
-                    <div style="text-align:center; padding:40px;">
-                        <h3 style="color:#c0392b; margin-bottom:15px;">No se encontraron pagos pendientes</h3>
-                        <p style="margin-bottom:25px;">No hay facturas pendientes de pago para este número.</p>
-                        <button onclick="window.location.href='index.html'" style="padding:12px 24px; background:#e30613; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">
-                            Volver al inicio
-                        </button>
-                    </div>
+            
+            if (!j.details) {
+                console.error('❌ Objeto details es null/undefined');
+                showNoPayments();
+                return;
+            }
+            
+            const d = j.details;
+            console.log('Detalles a renderizar:', d);
+            
+            // Verificar que al menos haya un campo con datos
+            const hasAnyData = Object.values(d).some(val => val && val !== '—');
+            
+            if (!hasAnyData) {
+                console.error('❌ Todos los campos están vacíos');
+                showNoPayments();
+                return;
+            }
+            
+            console.log('✓ Datos válidos encontrados, renderizando...');
+            
+            // Actualizar valor total (con el link de Editar)
+            const valEls = document.querySelectorAll('.payment-value.highlight');
+            if (valEls && valEls.length > 0) {
+                const valorTotal = d.valor_total || '—';
+                valEls[0].innerHTML = `
+                    ${valorTotal}
+                    <a href="#" class="edit-link">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
                 `;
+                console.log('✓ Valor total actualizado:', valorTotal);
+            } else {
+                console.warn('⚠ No se encontró .payment-value.highlight');
             }
+            
+            // Actualizar el resto de campos
+            const allVals = document.querySelectorAll('.payment-value');
+            let nonHighlight = Array.from(allVals).filter(el => !el.classList.contains('highlight'));
+            
+            console.log(`Encontrados ${nonHighlight.length} elementos .payment-value`);
+            
+            if (nonHighlight.length >= 6) {
+                nonHighlight[0].textContent = d.celular || '—';
+                nonHighlight[1].textContent = d.pague_antes || '—';
+                nonHighlight[2].textContent = d.valor_servicios || '—';
+                nonHighlight[3].textContent = d.valor_equipo || '—';
+                nonHighlight[4].textContent = d.fecha_carga || '—';
+                nonHighlight[5].textContent = d.referencia || '—';
+                
+                console.log('✓✓✓ TODOS LOS CAMPOS ACTUALIZADOS ✓✓✓');
+                console.log('Celular:', d.celular);
+                console.log('Pague antes:', d.pague_antes);
+                console.log('Valor servicios:', d.valor_servicios);
+                console.log('Valor equipo:', d.valor_equipo);
+                console.log('Fecha carga:', d.fecha_carga);
+                console.log('Referencia:', d.referencia);
+                console.log('='.repeat(60));
+            } else {
+                console.warn(`⚠ Elementos insuficientes: ${nonHighlight.length}/6`);
+                
+                // Mostrar datos de todas formas en un box alternativo
+                const container = document.querySelector('.payment-body') || document.querySelector('.payment-section');
+                if (container) {
+                    const debugBox = document.createElement('div');
+                    debugBox.style.cssText = 'padding:20px; border:2px solid #e30613; margin:20px 0; background:#fff3f3; border-radius:8px; font-family:Arial,sans-serif;';
+                    debugBox.innerHTML = `
+                        <h3 style="color:#e30613; margin:0 0 15px 0; font-size:18px;">📋 Detalles de Pago Extraídos</h3>
+                        <div style="line-height:2;">
+                            <div><strong>Valor Total:</strong> <span style="color:#e30613; font-size:18px; font-weight:bold;">${d.valor_total || '—'}</span></div>
+                            <div><strong>Número Celular:</strong> ${d.celular || '—'}</div>
+                            <div><strong>Pague antes de:</strong> ${d.pague_antes || '—'}</div>
+                            <div><strong>Valor servicios + Suplementarios:</strong> ${d.valor_servicios || '—'}</div>
+                            <div><strong>Valor por equipo:</strong> ${d.valor_equipo || '—'}</div>
+                            <div><strong>Fecha de carga:</strong> ${d.fecha_carga || '—'}</div>
+                            <div><strong>Referencia:</strong> ${d.referencia || '—'}</div>
+                        </div>
+                    `;
+                    container.appendChild(debugBox);
+                    console.log('✓ Box alternativo de detalles insertado');
+                }
+            }
+            
+        } catch (err) {
+            console.error('❌ EXCEPTION en fetchAndRenderDetails:');
+            console.error('Error:', err);
+            console.error('Stack:', err.stack);
+            showNoPayments();
         }
+    }
 
-        // Ejecutar cuando la página cargue
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página cargada, buscando detalles...');
-            console.log('Número en sessionStorage:', sessionStorage.getItem('scraper_numero'));
+    function showNoPayments() {
+        console.log('Mostrando mensaje de "sin pagos"');
+        const paymentSection = document.querySelector('.payment-section');
+        if (paymentSection) {
+            paymentSection.innerHTML = `
+                <div style="text-align:center; padding:60px 20px;">
+                    <div style="font-size:64px; margin-bottom:20px;">❌</div>
+                    <h3 style="color:#c0392b; margin:0 0 15px 0; font-size:24px;">No se encontraron pagos pendientes</h3>
+                    <p style="color:#666; margin:0 0 30px 0; font-size:16px;">No hay facturas pendientes de pago para este número.</p>
+                    <button onclick="window.location.href='index.html'" style="padding:14px 32px; background:#e30613; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px; font-weight:500;">
+                        ← Volver al inicio
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // Ejecutar cuando la página cargue
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded - Iniciando...');
+        
+        // Esperar 500ms para asegurar que sessionStorage esté disponible
+        setTimeout(() => {
             fetchAndRenderDetails();
+        }, 500);
+    });
+
+    // Dropdown de métodos de pago
+    const dropdown = document.getElementById('paymentDropdown');
+    const optionsList = document.getElementById('paymentOptionsList');
+
+    if (dropdown && optionsList) {
+        dropdown.addEventListener('click', function() {
+            this.classList.toggle('active');
+            optionsList.classList.toggle('show');
         });
-
-        // Dropdown functionality para métodos de pago
-        const dropdown = document.getElementById('paymentDropdown');
-        const optionsList = document.getElementById('paymentOptionsList');
-
-        if (dropdown && optionsList) {
-            dropdown.addEventListener('click', function() {
-                this.classList.toggle('active');
-                optionsList.classList.toggle('show');
-            });
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
-
-
 
